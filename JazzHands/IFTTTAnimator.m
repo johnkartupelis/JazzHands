@@ -37,4 +37,9 @@
     [self.animations addObject:animation];
 }
 
+- (void)stop
+{
+    [[self animations] removeAllObjects];
+}
+
 @end

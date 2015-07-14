@@ -12,5 +12,6 @@
 
 - (void)addAnimation:(id<IFTTTAnimatable>)animation;
 - (void)animate:(CGFloat)time;
+- (void)stop;
 
 @end

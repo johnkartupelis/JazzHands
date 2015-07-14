@@ -51,6 +51,11 @@
     _numberOfPages = 2;
 }
 
+-(void)dealloc
+{
+    [[self animator] stop];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -74,7 +79,14 @@
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.scrollView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeBottom multiplier:1.f constant:0.f]];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:(CGFloat)self.numberOfPages constant:0.f]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeHeight multiplier:1.f constant:0.f]];
+    
+    //Decrease the content view's height by the status bar frame size if the view goes under the status bar.
+    CGFloat heightAdjustment = 0.f;
+    if(self.edgesForExtendedLayout == UIRectEdgeAll || self.edgesForExtendedLayout == UIRectEdgeTop)
+    {
+        heightAdjustment = [[UIApplication sharedApplication] statusBarFrame].size.height;
+    }
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeHeight multiplier:1.f constant:-heightAdjustment]];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -86,6 +98,18 @@
     }
     
     [self animateCurrentFrame];
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    self.scrollView.delegate = self;
+}
+
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    self.scrollView.delegate = nil;
 }
 
 #pragma mark - iOS8+ Resizing
